@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DreamForge AI — Video Generator</title>
+<style>
+:root{--bg:#07080d;--panel:#0e1018;--panel2:#141722;--line:#252938;--text:#f4f6fb;--muted:#969caf;--accent:#8b5cf6;--accent2:#6366f1;--good:#22c55e}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 75% -10%,#26204c 0,#07080d 38%);color:var(--text);font:14px Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+button,input,textarea,select{font:inherit}button{cursor:pointer}
+.app{display:grid;grid-template-columns:250px 1fr;min-height:100vh}.side{border-right:1px solid var(--line);padding:22px 16px;background:rgba(8,9,14,.85);position:sticky;top:0;height:100vh}
+.logo{font-weight:800;font-size:19px;letter-spacing:-.4px;padding:4px 10px 26px}.logo span{color:#a78bfa}
+.nav button{width:100%;border:0;background:transparent;color:#aeb4c5;text-align:left;padding:12px;border-radius:10px;margin:2px 0}.nav button.active,.nav button:hover{background:#171a25;color:#fff}
+.bottom{position:absolute;bottom:18px;left:16px;right:16px}.credit{padding:14px;background:linear-gradient(135deg,#18142c,#10131c);border:1px solid #30275a;border-radius:12px}.credit b{display:block;margin-bottom:6px}.progress{height:5px;background:#262a36;border-radius:10px;overflow:hidden;margin:10px 0}.progress i{display:block;width:68%;height:100%;background:linear-gradient(90deg,var(--accent),#22d3ee)}
+.main{max-width:1200px;width:100%;margin:auto;padding:34px 36px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px}.top h1{margin:0;font-size:27px}.pill{border:1px solid var(--line);background:#11131c;border-radius:20px;padding:8px 12px;color:#bfc4d1}
+.grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(320px,.75fr);gap:18px}.card{background:rgba(14,16,24,.86);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 18px 50px rgba(0,0,0,.18)}.card h2{font-size:15px;margin:0 0 14px}.label{display:block;color:#aeb4c5;font-size:12px;margin:0 0 7px}
+textarea{width:100%;height:150px;resize:vertical;background:#090b11;color:#fff;border:1px solid #292d3a;border-radius:11px;padding:14px;outline:none}textarea:focus,input:focus,select:focus{border-color:#6851bc}
+.drop{margin-top:14px;border:1px dashed #3a3e4d;border-radius:12px;padding:20px;text-align:center;background:#0a0c12}.drop small{color:#858b9b}.drop input{display:none}
+.uploadbtn{display:inline-block;margin-top:9px;padding:8px 12px;border:1px solid #353a49;border-radius:9px;background:#151823}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}.field select,.field input{width:100%;padding:10px;background:#0a0c12;color:#fff;border:1px solid #292d3a;border-radius:9px}
+.gen{width:100%;margin-top:16px;border:0;border-radius:11px;padding:13px;color:#fff;font-weight:700;background:linear-gradient(90deg,#7c3aed,#4f46e5);box-shadow:0 8px 25px #4f46e533}.gen:disabled{opacity:.5;cursor:not-allowed}
+.preview{aspect-ratio:16/9;border-radius:12px;background:radial-gradient(circle at 55% 45%,#34265e,#11131c 45%,#07080d);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}.preview video{width:100%;height:100%;object-fit:cover;display:none}.empty{text-align:center;color:#777e90}.empty strong{display:block;color:#bfc4d1;margin-bottom:5px}
+.status{margin-top:14px;padding:11px;border-radius:10px;background:#0a0c12;border:1px solid var(--line);color:#9da4b4;display:none}
+.history{margin-top:18px}.item{display:flex;gap:12px;align-items:center;padding:11px 0;border-bottom:1px solid #1d202b}.thumb{width:88px;height:50px;border-radius:7px;background:linear-gradient(135deg,#24213f,#0c1118);display:flex;align-items:center;justify-content:center;color:#858b9b;font-size:11px}.item .meta{flex:1}.item b{font-size:13px}.item small{color:#777e90}.download{border:1px solid #343949;background:#141721;color:#d8dbea;border-radius:8px;padding:7px 10px}
+.tag{font-size:11px;color:#a78bfa;background:#241a42;border:1px solid #3b286d;border-radius:12px;padding:4px 7px}
+.note{margin-top:15px;font-size:12px;line-height:1.5;color:#777e90}.note code{color:#c4b5fd}
+@media(max-width:900px){.app{grid-template-columns:1fr}.side{display:none}.main{padding:20px}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="side">
+  <div class="logo">Dream<span>Forge</span> AI</div>
+  <div class="nav">
+    <button class="active">✦ Create video</button>
+    <button>▣ My generations</button>
+    <button>◈ Templates</button>
+    <button>⚙ Settings</button>
+  </div>
+  <div class="bottom">
+    <div class="credit"><b>Free credits</b><span id="credits">68 / 100 credits</span><div class="progress"><i></i></div><small style="color:#777e90">Demo mode</small></div>
+  </div>
+</aside>
+<main class="main">
+  <div class="top"><div><h1>Create video</h1><div style="color:#858b9b;margin-top:5px">Turn a prompt or image into a cinematic clip.</div></div><div class="pill">● Demo mode</div></div>
+  <div class="grid">
+    <section>
+      <div class="card">
+        <h2>Describe your video</h2>
+        <label class="label">Prompt</label>
+        <textarea id="prompt" placeholder="A cinematic shot of a lone astronaut walking through a futuristic city at night, rain falling in slow motion, volumetric lighting, realistic camera movement..."></textarea>
+        <div class="drop">
+          <div>Drop a reference image here</div><small>PNG, JPG or WEBP</small><br>
+          <label class="uploadbtn">Choose image<input id="image" type="file" accept="image/*"></label>
+          <div id="filename" style="margin-top:7px;color:#a78bfa"></div>
+        </div>
+        <div class="row">
+          <div class="field"><label class="label">Aspect ratio</label><select id="ratio"><option>16:9</option><option>9:16</option><option>1:1</option></select></div>
+          <div class="field"><label class="label">Duration</label><select id="duration"><option value="5">5 seconds</option><option value="10">10 seconds</option><option value="15">15 seconds</option></select></div>
+        </div>
+        <div class="row">
+          <div class="field"><label class="label">Model</label><select id="model"><option>DreamForge Cinematic</option><option>Fast Preview</option></select></div>
+          <div class="field"><label class="label">Quality</label><select id="quality"><option>1080p</option><option>720p</option></select></div>
+        </div>
+        <button class="gen" id="generate">Generate video — 4 credits</button>
+        <div class="status" id="status"></div>
+        <div class="note">This starter runs locally in <b>demo mode</b>. To make it generate real AI video, connect your preferred video-model API in <code>/api/generate</code>; never put an API key in browser JavaScript.</div>
+      </div>
+    </section>
+    <section>
+      <div class="card">
+        <h2>Preview</h2>
+        <div class="preview" id="preview">
+          <div class="empty" id="empty"><strong>Your video will appear here</strong>Generate a clip to preview it.</div>
+          <video id="video" controls></video>
+        </div>
+        <div class="history">
+          <h2 style="margin-top:20px">Recent generations</h2>
+          <div id="history"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+let credits=68, jobs=JSON.parse(localStorage.getItem('dreamforge_jobs')||'[]');
+$('image').onchange=e=>$('filename').textContent=e.target.files[0]?.name||'';
+function render(){ $('history').innerHTML=jobs.slice(0,6).map((j,i)=>`<div class="item"><div class="thumb">VIDEO</div><div class="meta"><b>${esc(j.prompt.slice(0,52))}${j.prompt.length>52?'…':''}</b><br><small>${j.duration}s · ${j.ratio} · <span class="tag">${j.status}</span></small></div>${j.url?`<a class="download" href="${j.url}" download="dreamforge-video.mp4">Download</a>`:''}</div>`).join('') || '<div style="color:#777e90;font-size:12px">No generations yet.</div>'; }
+function esc(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+render();
+$('generate').onclick=async()=>{
+ const prompt=$('prompt').value.trim(); if(!prompt){$('prompt').focus();return}
+ if(credits<4){alert('Not enough demo credits.');return}
+ credits-=4;$('credits').textContent=credits+' / 100 credits';
+ const b=$('generate'); b.disabled=true;b.textContent='Generating…';
+ $('status').style.display='block';$('status').textContent='Preparing your cinematic generation…';
+ let n=0; const timer=setInterval(()=>{n++;$('status').textContent=['Analyzing prompt…','Building frames…','Applying motion…','Rendering preview…'][Math.min(n-1,3)]},700);
+ try{
+   const r=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt,ratio:$('ratio').value,duration:Number($('duration').value),model:$('model').value,quality:$('quality').value})});
+   const data=await r.json();
+   if(!r.ok) throw new Error(data.error||'Generation failed');
+   clearInterval(timer); $('status').textContent=data.demo?'Demo generation complete. Connect a video API for real generation.':'Generation complete.';
+   if(data.videoUrl){$('empty').style.display='none';$('video').style.display='block';$('video').src=data.videoUrl}
+   jobs.unshift({prompt,duration:$('duration').value,ratio:$('ratio').value,status:data.demo?'demo':'complete',url:data.videoUrl||''});
+   localStorage.setItem('dreamforge_jobs',JSON.stringify(jobs));render();
+ }catch(e){clearInterval(timer);$('status').textContent='Demo fallback: '+e.message}
+ b.disabled=false;b.textContent='Generate video — 4 credits';
+};
+</script>
+</body>
+</html>
